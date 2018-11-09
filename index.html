@@ -16,9 +16,9 @@ limitations under the License
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="description" content="Bank loans based on RYA">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Material Design Lite</title>
+    <title>Rya Bank</title>
     <script defer src="/__/firebase/5.5.7/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/5.5.7/firebase-auth.js"></script>
@@ -27,6 +27,12 @@ limitations under the License
     <script defer src="/__/firebase/5.5.7/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="icon" sizes="192x192" href="images/android-desktop.png">
@@ -47,6 +53,12 @@ limitations under the License
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.material.min.css">
+    
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <style>
     #view-source {
     position: fixed;
@@ -56,6 +68,39 @@ limitations under the License
     margin-right: 40px;
     margin-bottom: 40px;
     z-index: 900;
+    }
+    table.dataTable tbody td {
+    text-align: center;
+    }
+    input {
+    background: none;
+    border: none;
+    border-bottom: 2px solid red;
+    }
+    button{
+    border-color: black;
+    background-color: slategrey;
+    color: white;
+    font-family: monospace;
+    }
+    .mdl-data-table__cell--non-numeric.mdl-data-table__cell--non-numeric {
+    text-align: center;
+    }
+    @media only screen and (max-width: 700px) {
+    .zoom {
+    zoom: 0.78;
+    }
+    }
+    @media only screen and (min-width: 700px) {
+    .zoom {
+    zoom: 1.6;
+    }
+    #example{
+    width:46vw!important;
+    }
+    }
+    .dataTables_filter{
+    text-align: center!important;
     }
     </style>
   </head>
@@ -68,9 +113,7 @@ limitations under the License
           </div>
           <div class="mdl-layout-spacer"></div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-            <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-              <i class="material-icons">search</i>
-            </label>
+            
             <div class="mdl-textfield__expandable-holder">
               <input class="mdl-textfield__input" type="text" id="search">
               <label class="mdl-textfield__label" for="search">Enter your query...</label>
@@ -90,9 +133,9 @@ limitations under the License
         <header class="demo-drawer-header">
           <img src="images/user.jpg" class="demo-avatar">
           <div class="demo-avatar-dropdown">
-           
+            
             <div class="mdl-layout-spacer"></div>
-           
+            
             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
               <li class="mdl-menu__item" id="in"><i class="material-icons">power_settings_new</i>sign in</li>
               <li class="mdl-menu__item" id="new"><i class="material-icons">add</i>sign up</li>
@@ -101,159 +144,200 @@ limitations under the License
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">inbox</i>Inbox</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>Trash</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation" onclick="request()">add</i>new request</a>
+          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>history</a>
           <div class="mdl-layout-spacer"></div>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
         </nav>
       </div>
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid demo-content">
-          <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-            <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
-              <use xlink:href="#piechart" mask="url(#piemask)" />
-              <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan font-size="0.2" dy="-0.07">%</tspan></text>
-            </svg>
-            <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
-              <use xlink:href="#piechart" mask="url(#piemask)" />
-              <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan dy="-0.07" font-size="0.2">%</tspan></text>
-            </svg>
-            <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
-              <use xlink:href="#piechart" mask="url(#piemask)" />
-              <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan dy="-0.07" font-size="0.2">%</tspan></text>
-            </svg>
-            <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
-              <use xlink:href="#piechart" mask="url(#piemask)" />
-              <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan dy="-0.07" font-size="0.2">%</tspan></text>
-            </svg>
-          </div>
-          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
-            <svg fill="currentColor" viewBox="0 0 500 250" class="demo-graph">
-              <use xlink:href="#chart" />
-            </svg>
-            <svg fill="currentColor" viewBox="0 0 500 250" class="demo-graph">
-              <use xlink:href="#chart" />
-            </svg>
-          </div>
-          <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
-            <div class="demo-separator mdl-cell--1-col"></div>
-            <div class="demo-options mdl-card mdl-color--deep-purple-500 mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--3-col-tablet mdl-cell--12-col-desktop">
-              <div class="mdl-card__supporting-text mdl-color-text--blue-grey-50">
-                <h3>View options</h3>
-                <ul>
-                  <li>
-                    <label for="chkbox1" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                      <input type="checkbox" id="chkbox1" class="mdl-checkbox__input">
-                      <span class="mdl-checkbox__label">Click per object</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label for="chkbox2" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                      <input type="checkbox" id="chkbox2" class="mdl-checkbox__input">
-                      <span class="mdl-checkbox__label">Views per object</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label for="chkbox3" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                      <input type="checkbox" id="chkbox3" class="mdl-checkbox__input">
-                      <span class="mdl-checkbox__label">Objects selected</span>
-                    </label>
-                  </li>
-                  <li>
-                    <label for="chkbox4" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-                      <input type="checkbox" id="chkbox4" class="mdl-checkbox__input">
-                      <span class="mdl-checkbox__label">Objects viewed</span>
-                    </label>
-                  </li>
-                </ul>
-              </div>
-              <div class="mdl-card__actions mdl-card--border">
-                <a href="#" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--blue-grey-50">Change location</a>
-                <div class="mdl-layout-spacer"></div>
-                <i class="material-icons">location_on</i>
-              </div>
+          <div class="zoom" style="
+            width: -webkit-fill-available;
+            ">
+            <div id="mod" class="modal">
+              <p>Thanks for clicking. That felt good.</p>
+              <a href="#" rel="modal:close">Close</a>
+            </div>
+          <table id="example" class="mdl-data-table" width="60%"></table>
+        </div>
+        <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+          <svg fill="currentColor" viewBox="0 0 500 250" class="demo-graph">
+            <use xlink:href="#chart" />
+          </svg>
+          <svg fill="currentColor" viewBox="0 0 500 250" class="demo-graph">
+            <use xlink:href="#chart" />
+          </svg>
+        </div>
+        <p><a id="fire" href="#mod" rel="modal:open"></a></p>
+        <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
+          <div class="demo-separator mdl-cell--1-col"></div>
+          <div class="demo-options mdl-card mdl-color--deep-purple-500 mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--3-col-tablet mdl-cell--12-col-desktop">
+            <div class="mdl-card__supporting-text mdl-color-text--blue-grey-50">
+              <h3>View options</h3>
+              <ul>
+                <li>
+                  <label for="chkbox1" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                    <input type="checkbox" id="chkbox1" class="mdl-checkbox__input">
+                    <span class="mdl-checkbox__label">Click per object</span>
+                  </label>
+                </li>
+                <li>
+                  <label for="chkbox2" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                    <input type="checkbox" id="chkbox2" class="mdl-checkbox__input">
+                    <span class="mdl-checkbox__label">Views per object</span>
+                  </label>
+                </li>
+                <li>
+                  <label for="chkbox3" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                    <input type="checkbox" id="chkbox3" class="mdl-checkbox__input">
+                    <span class="mdl-checkbox__label">Objects selected</span>
+                  </label>
+                </li>
+                <li>
+                  <label for="chkbox4" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+                    <input type="checkbox" id="chkbox4" class="mdl-checkbox__input">
+                    <span class="mdl-checkbox__label">Objects viewed</span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+              <a href="#" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--blue-grey-50">Change location</a>
+              <div class="mdl-layout-spacer"></div>
+              <i class="material-icons">location_on</i>
             </div>
           </div>
         </div>
-      </main>
-    </div>
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="position: fixed; left: -1000px; height: -1000px;">
-      <defs>
-      <mask id="piemask" maskContentUnits="objectBoundingBox">
-      <circle cx=0.5 cy=0.5 r=0.49 fill="white" />
-      <circle cx=0.5 cy=0.5 r=0.40 fill="black" />
-      </mask>
-      <g id="piechart">
-        <circle cx=0.5 cy=0.5 r=0.5 />
-        <path d="M 0.5 0.5 0.5 0 A 0.5 0.5 0 0 1 0.95 0.28 z" stroke="none" fill="rgba(255, 255, 255, 0.75)" />
-      </g>
-      </defs>
-    </svg>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 250" style="position: fixed; left: -1000px; height: -1000px;">
-      <defs>
-      <g id="chart">
-        <g id="Gridlines">
-          <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="27.3" x2="468.3" y2="27.3" />
-            <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="66.7" x2="468.3" y2="66.7" />
-              <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="105.3" x2="468.3" y2="105.3" />
-                <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="144.7" x2="468.3" y2="144.7" />
-                  <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="184.3" x2="468.3" y2="184.3" />
+      </div>
+    </main>
+  </div>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="position: fixed; left: -1000px; height: -1000px;">
+    <defs>
+    <mask id="piemask" maskContentUnits="objectBoundingBox">
+    <circle cx=0.5 cy=0.5 r=0.49 fill="white" />
+    <circle cx=0.5 cy=0.5 r=0.40 fill="black" />
+    </mask>
+    <g id="piechart">
+      <circle cx=0.5 cy=0.5 r=0.5 />
+      <path d="M 0.5 0.5 0.5 0 A 0.5 0.5 0 0 1 0.95 0.28 z" stroke="none" fill="rgba(255, 255, 255, 0.75)" />
+    </g>
+    </defs>
+  </svg>
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 250" style="position: fixed; left: -1000px; height: -1000px;">
+    <defs>
+    <g id="chart">
+      <g id="Gridlines">
+        <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="27.3" x2="468.3" y2="27.3" />
+          <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="66.7" x2="468.3" y2="66.7" />
+            <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="105.3" x2="468.3" y2="105.3" />
+              <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="144.7" x2="468.3" y2="144.7" />
+                <line fill="#888888" stroke="#888888" stroke-miterlimit="10" x1="0" y1="184.3" x2="468.3" y2="184.3" />
+                </g>
+                <g id="Numbers">
+                  <text transform="matrix(1 0 0 1 485 29.3333)" fill="#888888" font-family="'Roboto'" font-size="9">500</text>
+                  <text transform="matrix(1 0 0 1 485 69)" fill="#888888" font-family="'Roboto'" font-size="9">400</text>
+                  <text transform="matrix(1 0 0 1 485 109.3333)" fill="#888888" font-family="'Roboto'" font-size="9">300</text>
+                  <text transform="matrix(1 0 0 1 485 149)" fill="#888888" font-family="'Roboto'" font-size="9">200</text>
+                  <text transform="matrix(1 0 0 1 485 188.3333)" fill="#888888" font-family="'Roboto'" font-size="9">100</text>
+                  <text transform="matrix(1 0 0 1 0 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">1</text>
+                  <text transform="matrix(1 0 0 1 78 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">2</text>
+                  <text transform="matrix(1 0 0 1 154.6667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">3</text>
+                  <text transform="matrix(1 0 0 1 232.1667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">4</text>
+                  <text transform="matrix(1 0 0 1 309 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">5</text>
+                  <text transform="matrix(1 0 0 1 386.6667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">6</text>
+                  <text transform="matrix(1 0 0 1 464.3333 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">7</text>
+                </g>
+                <g id="Layer_5">
+                  <polygon opacity="0.36" stroke-miterlimit="10" points="0,223.3 48,138.5 154.7,169 211,88.5
+                    294.5,80.5 380,165.2 437,75.5 469.5,223.3   "/>
                   </g>
-                  <g id="Numbers">
-                    <text transform="matrix(1 0 0 1 485 29.3333)" fill="#888888" font-family="'Roboto'" font-size="9">500</text>
-                    <text transform="matrix(1 0 0 1 485 69)" fill="#888888" font-family="'Roboto'" font-size="9">400</text>
-                    <text transform="matrix(1 0 0 1 485 109.3333)" fill="#888888" font-family="'Roboto'" font-size="9">300</text>
-                    <text transform="matrix(1 0 0 1 485 149)" fill="#888888" font-family="'Roboto'" font-size="9">200</text>
-                    <text transform="matrix(1 0 0 1 485 188.3333)" fill="#888888" font-family="'Roboto'" font-size="9">100</text>
-                    <text transform="matrix(1 0 0 1 0 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">1</text>
-                    <text transform="matrix(1 0 0 1 78 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">2</text>
-                    <text transform="matrix(1 0 0 1 154.6667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">3</text>
-                    <text transform="matrix(1 0 0 1 232.1667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">4</text>
-                    <text transform="matrix(1 0 0 1 309 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">5</text>
-                    <text transform="matrix(1 0 0 1 386.6667 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">6</text>
-                    <text transform="matrix(1 0 0 1 464.3333 249.0003)" fill="#888888" font-family="'Roboto'" font-size="9">7</text>
+                  <g id="Layer_4">
+                    <polygon stroke-miterlimit="10" points="469.3,222.7 1,222.7 48.7,166.7 155.7,188.3 212,132.7
+                      296.7,128 380.7,184.3 436.7,125   "/>
+                    </g>
                   </g>
-                  <g id="Layer_5">
-                    <polygon opacity="0.36" stroke-miterlimit="10" points="0,223.3 48,138.5 154.7,169 211,88.5
-                      294.5,80.5 380,165.2 437,75.5 469.5,223.3   "/>
-                    </g>
-                    <g id="Layer_4">
-                      <polygon stroke-miterlimit="10" points="469.3,222.7 1,222.7 48.7,166.7 155.7,188.3 212,132.7
-                        296.7,128 380.7,184.3 436.7,125   "/>
-                      </g>
-                    </g>
-                    </defs>
-                  </svg>
-                  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-                  <script type="text/javascript">
-                  const newUser = document.getElementById("new");
-                  const signIn = document.getElementById("in");
-                  const home = document.getElementById("home");
-                  const sign = document.getElementById("sign");
-                  const log = document.getElementById("log");
-                  function signUp(){
-                  var mail = document.getElementById("mail").value;
-                  var pass = document.getElementById("pass").value;
-                  firebase.auth().signInWithEmailAndPassword(mail,pass);
-                  firebase.auth().createUserWithEmailAndPassword(mail,pass);
-                  }
-                  document.addEventListener('DOMContentLoaded', function() {
-                  try {
-                  let app = firebase.app();
-                  firebase.auth().onAuthStateChanged(user => {
-                  if (user) {
-                  var userName = firebase.auth().currentUser.email;
-                  document.getElementById("log").innerHTML = userName + "<span id='x' style='cursor:pointer' onclick='signOut()'>X</span>";
-                  } else {
-                  document.getElementById("log").innerHTML = log.innerHTML;
-                  }});
-                  } catch (e) {
-                  }
-                  });
-                  function signOut(){
-                  firebase.auth().signOut();
-                  document.getElementById("log").innerHTML = "<input placeholder='mail' size='12' id='mail'></input><input id='pass' placeholder='pass' size='12'></input><button id='sign' onclick='signUp()'>sign</button>";
-                  }
-                  </script>
-                </body>
-              </html>
+                  </defs>
+                </svg>
+                <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+                
+                <script type="text/javascript">
+                var data;
+                var dataSet;
+                dataSet = [];
+                var userLoans;
+                data = [];
+                const newUser = document.getElementById("new");
+                const signIn = document.getElementById("in");
+                const home = document.getElementById("home");
+                const sign = document.getElementById("sign");
+                const log = document.getElementById("log");
+                function signUp(){
+                var mail = document.getElementById("mail").value;
+                var pass = document.getElementById("pass").value;
+                firebase.auth().signInWithEmailAndPassword(mail,pass);
+                firebase.auth().createUserWithEmailAndPassword(mail,pass);
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                try {
+                let app = firebase.app();
+                firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                var userName = firebase.auth().currentUser.email;
+                document.getElementById("log").innerHTML = userName + "<span id='x' style='cursor:pointer' onclick='signOut()'>X</span>";
+                firebase.database().ref('clients/'+firebase.auth().currentUser.uid+'/loans').on("value", function(data){userLoans = data.val()});
+                setTimeout(function(){ for (var i=0; i<Object.keys(userLoans).length; i++){
+                firebase.database().ref('loans/'+Object.keys(userLoans)[i]).on("value", function(data){dataSet.push(Object.values(data.val()))})};
+                },1000);
+                setTimeout(function(){
+                for(var i=0; i<dataSet.length;i++){
+                var temp = this.dataSet[i][2];
+                if (dataSet[i][6] == 1) this.dataSet[i][2] = "pending";
+                if (dataSet[i][6] == 2) this.dataSet[i][2] = "approved";
+                if (dataSet[i][6] == 3) this.dataSet[i][2] = "cancelled";
+                if (dataSet[i][6] == 4) this.dataSet[i][2] = "rejected";
+                if (dataSet[i][6] == 5) this.dataSet[i][2] = "ended";
+                this.dataSet[i][6] = temp;
+                };
+                now()},1500);
+                } else {
+                document.getElementById("log").innerHTML = log.innerHTML;
+                }});
+                } catch (e) {
+                }
+                });
+                function signOut(){
+                firebase.auth().signOut();
+                location.reload();
+                document.getElementById("log").innerHTML = "<input placeholder='mail' size='12' id='mail'></input><input id='pass' placeholder='pass' size='12'></input><button id='sign' onclick='signUp()'>sign</button>";
+                }
+                
+                function now() {
+                $('#example').DataTable( {
+                data: dataSet,
+                columns: [
+                { title: "amount" },
+                { title: "description" },
+                { title: "status" }
+                ],
+                columnDefs: [
+                {
+                targets: [ 0, 1, 2 ],
+                className: 'mdl-data-table__cell--non-numeric'
+                }
+                ]
+                } );
+                var table = $('#example').DataTable();
+                $('#example tbody').on('click', 'tr', function () {
+                var data = table.row( this );
+                $('#mod')[0].innerHTML = "amount: " + dataSet[data[0]][0]+"<br>description: "+
+                dataSet[data[0]][1]+"<br>status: "+dataSet[data[0]][2]+"<br>id: "+
+                dataSet[data[0]][3]+"<br>address: "+dataSet[data[0]][4]+"<br>notes: "+dataSet[data[0]][5]+
+                "<br>duration: "+Math.floor(dataSet[data[0]][6]/730)+" months";
+                $('#fire')[0].click();
+                } );
+                }
+                function request()
+                </script>
+              </body>
+            </html>
