@@ -360,10 +360,7 @@ limitations under the License
                 loanToAddress:address,
                 updateTimestamp: Date.now()
                 });
-                firebase.database().ref('clients/' + user +"/loans/"+key).push({
-                [key]:true
-                
-                });
+                firebase.database().ref('clients/' + user +"/loans/"+key).set(true);
                 location.reload();
                 }
                 function makeid() {
