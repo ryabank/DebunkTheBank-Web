@@ -144,7 +144,7 @@ limitations under the License
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation" onclick="request()">add</i>new request</a>
+          <a class="mdl-navigation__link" onclick="request()" style="cursor:pointer;"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">add</i>new request</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>history</a>
           <div class="mdl-layout-spacer"></div>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
@@ -337,7 +337,42 @@ limitations under the License
                 $('#fire')[0].click();
                 } );
                 }
-                function request()
+                function request() {
+                $('#mod')[0].innerHTML = "address<br><input id='address'></input><br><br>amount<br><input id='amount'></input><br><br>description<br><input id='description'></input><br><br>duration(months)<br><input id='duration'></input><br><br>notes<br><input id='notes'></input><br><br><button onclick='req()' id='req'>request</button>";
+                $('#fire')[0].click();
+                var key;
+                }
+                function req(){
+                var amount = document.getElementById("amount").value;
+                var description = document.getElementById("description").value;
+                var duration = document.getElementById("duration").value*730;
+                var notes = document.getElementById("notes").value;
+                var address = document.getElementById("address").value;
+                key = makeid();
+                var user = firebase.auth().currentUser.uid;
+                firebase.database().ref('loans/' + key).update({
+                amount: amount,
+                status: "1",
+                description: description,
+                durationBlocks : duration,
+                notes: notes,
+                identifier: key,
+                loanToAddress:address,
+                updateTimestamp: Date.now()
+                });
+                firebase.database().ref('clients/' + user +"/loans/"+key).push({
+                [key]:true
+                
+                });
+                location.reload();
+                }
+                function makeid() {
+                var text = "loan-";
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                for (var i = 0; i < 7; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+                return text;
+                }
                 </script>
               </body>
             </html>
